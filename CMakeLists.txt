@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 4.1)
+project(VINCI_Esercizio4_IlRegistroDelleRenneDiBabboNatale C)
+
+set(CMAKE_C_STANDARD 11)
+
+add_executable(VINCI_Esercizio4_IlRegistroDelleRenneDiBabboNatale main.c)
