@@ -88,6 +88,20 @@ int main(void) {
         }
         close(fileDescriptor[0]);
         wait(NULL);
+        printf("Renne ricevute:\n");
+        Renna bestSpeed = renne[0];
+        for (int j = 0; j < i; j++) {
+            if (renne[j].velocità == bestSpeed.velocità) {
+                if (renne[j].resistenza > bestSpeed.resistenza) {
+                    bestSpeed = renne[j];
+                }
+            } else if (renne[j].velocità > bestSpeed.velocità) {
+                bestSpeed = renne[j];
+            }
+            printf("Nome: %s, Velocità: %d km/h, Resistenza: %d\n", renne[j].nome, renne[j].velocità, renne[j].resistenza);
+        }
+        printf("\n%s guiderà la slitta con velocità %d km/h!\n", bestSpeed.nome, bestSpeed.velocità);
+        free(renne);
     }
     return 0;
 }
