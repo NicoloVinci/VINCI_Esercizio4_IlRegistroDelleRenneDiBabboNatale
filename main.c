@@ -27,7 +27,7 @@ int main(void) {
     if (elf == 0) {
         close(fileDescriptor[0]);
         int randomNumber = rand() % 8 + 5;
-        Renna renne[randomNumber];
+        Renna reindeer[randomNumber];
         Renna r;
         for (int i = 0; i < randomNumber; i++) {
             strcpy(r.nome, "Renna_");
@@ -49,10 +49,10 @@ int main(void) {
             }
             r.velocità = rand() % 51 + 50;
             r.resistenza = rand() % 10 + 1;
-            renne[i] = r;
+            reindeer[i] = r;
         }
         for (int i = 0; i < randomNumber; i++) {
-            if (write(fileDescriptor[1], &renne[i], sizeof(Renna)) != sizeof(Renna)) {
+            if (write(fileDescriptor[1], &reindeer[i], sizeof(Renna)) != sizeof(Renna)) {
                 perror("write to santa");
                 exit(EXIT_FAILURE);
             }
@@ -69,7 +69,7 @@ int main(void) {
     } else {
         close(fileDescriptor[1]);
         Renna r;
-        Renna *renne = NULL;
+        Renna *reindeer = NULL;
         int i = 0;
         ssize_t n;
         while ((n = read(fileDescriptor[0], &r, sizeof(Renna))) > 0) {
@@ -80,14 +80,14 @@ int main(void) {
             if (r.velocità == -1) {
                 break;
             }
-            Renna *tmp = realloc(renne, sizeof(Renna) * (i + 1));
+            Renna *tmp = realloc(reindeer, sizeof(Renna) * (i + 1));
             if (tmp == NULL) {
                 perror("realloc");
-                free(renne);
+                free(reindeer);
                 exit(EXIT_FAILURE);
             }
-            renne = tmp;
-            renne[i] = r;
+            reindeer = tmp;
+            reindeer[i] = r;
             i++;
         }
         if (n == -1) {
@@ -96,7 +96,7 @@ int main(void) {
         }
         if (i <= 0) {
             printf("Nessuna renna ricevuta.\n");
-            free(renne);
+            free(reindeer);
             close(fileDescriptor[0]);
             wait(NULL);
             exit(EXIT_SUCCESS);
@@ -104,19 +104,19 @@ int main(void) {
         close(fileDescriptor[0]);
         wait(NULL);
         printf("Renne ricevute:\n");
-        Renna bestSpeed = renne[0];
+        Renna bestSpeed = reindeer[0];
         for (int j = 0; j < i; j++) {
-            if (renne[j].velocità == bestSpeed.velocità) {
-                if (renne[j].resistenza > bestSpeed.resistenza) {
-                    bestSpeed = renne[j];
+            if (reindeer[j].velocità == bestSpeed.velocità) {
+                if (reindeer[j].resistenza > bestSpeed.resistenza) {
+                    bestSpeed = reindeer[j];
                 }
-            } else if (renne[j].velocità > bestSpeed.velocità) {
-                bestSpeed = renne[j];
+            } else if (reindeer[j].velocità > bestSpeed.velocità) {
+                bestSpeed = reindeer[j];
             }
-            printf("Nome: %s, Velocità: %d km/h, Resistenza: %d\n", renne[j].nome, renne[j].velocità, renne[j].resistenza);
+            printf("Nome: %s, Velocità: %d km/h, Resistenza: %d\n", reindeer[j].nome, reindeer[j].velocità, reindeer[j].resistenza);
         }
         printf("\n%s guiderà la slitta con velocità %d km/h!\n", bestSpeed.nome, bestSpeed.velocità);
-        free(renne);
+        free(reindeer);
     }
     return 0;
 }
