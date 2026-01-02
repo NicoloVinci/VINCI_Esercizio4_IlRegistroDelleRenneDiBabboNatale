@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <time.h>
+#include <string.h>
 
 typedef struct {
     char nome[30];
@@ -27,6 +28,10 @@ int main(void) {
         int randomNumber = rand() % 8 + 5;
         for (int i = 0; i < randomNumber; i++) {
             Renna r;
+            strcpy(r.nome, "Renna_");
+            r.nome[6] = (i + 1) + '0';
+            r.velocità = rand() % 51 + 50;
+            r.resistenza = rand() % 10 + 1;
         }
     } else {
         close(fileDescriptor[1]);
