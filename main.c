@@ -27,8 +27,8 @@ int main(void) {
     if (elf == 0) {
         close(fileDescriptor[0]);
         int randomNumber = rand() % 8 + 5;
+        Renna r;
         for (int i = 0; i < randomNumber; i++) {
-            Renna r;
             strcpy(r.nome, "Renna_");
             r.nome[6] = (i + 1) + '0';
             r.velocità = rand() % 51 + 50;
@@ -36,6 +36,12 @@ int main(void) {
             write(fileDescriptor[1], &r, sizeof(Renna));
             sleep(1);
         }
+        strcpy(r.nome, "Renna_Sentinella");
+        r.velocità = -1;
+        r.resistenza = rand() % 10 + 1;
+        write(fileDescriptor[1], &r, sizeof(Renna));
+        close(fileDescriptor[1]);
+        exit(EXIT_SUCCESS);
     } else {
         close(fileDescriptor[1]);
         wait(NULL);
