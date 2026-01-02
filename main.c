@@ -5,7 +5,6 @@
 #include <sys/types.h>
 #include <time.h>
 #include <string.h>
-#include <signal.h>
 
 typedef struct {
     char nome[30];
@@ -14,12 +13,12 @@ typedef struct {
 } Renna;
 
 int main(void) {
-    srand(time(NULL));
     int fileDescriptor[2];
     if (pipe(fileDescriptor) == -1) {
         perror("pipe");
         exit(EXIT_FAILURE);
     }
+    srand(time(NULL));
     pid_t elf;
     if ((elf = fork()) == -1) {
         perror("fork");
@@ -28,7 +27,7 @@ int main(void) {
     if (elf == 0) {
         close(fileDescriptor[0]);
         int randomNumber = rand() % 8 + 5;
-        Renna renne[randomNumber + 1];
+        Renna renne[randomNumber];
         Renna r;
         for (int i = 0; i < randomNumber; i++) {
             strcpy(r.nome, "Renna_");
@@ -52,22 +51,25 @@ int main(void) {
             r.resistenza = rand() % 10 + 1;
             renne[i] = r;
         }
-        strcpy(r.nome, "Renna_Sentinella");
-        r.velocità = -1;
-        r.resistenza = rand() % 10 + 1;
-        renne[randomNumber] = r;
-        for (int i = 0; i <= randomNumber; i++) {
+        for (int i = 0; i < randomNumber; i++) {
             if (write(fileDescriptor[1], &renne[i], sizeof(Renna)) != sizeof(Renna)) {
                 perror("write to santa");
                 exit(EXIT_FAILURE);
             }
+        }
+        strcpy(r.nome, "Renna_Sentinella");
+        r.velocità = -1;
+        r.resistenza = rand() % 10 + 1;
+        if (write(fileDescriptor[1], &r, sizeof(Renna)) != sizeof(Renna)) {;
+            perror("write to santa");
+            exit(EXIT_FAILURE);
         }
         close(fileDescriptor[1]);
         exit(EXIT_SUCCESS);
     } else {
         close(fileDescriptor[1]);
         Renna r;
-        Renna *renne = malloc(sizeof(Renna));
+        Renna *renne = NULL;
         int i = 0;
         ssize_t n;
         while ((n = read(fileDescriptor[0], &r, sizeof(Renna))) > 0) {
@@ -78,13 +80,26 @@ int main(void) {
             if (r.velocità == -1) {
                 break;
             }
-            renne = realloc(renne, sizeof(Renna) * (i + 1));
+            Renna *tmp = realloc(renne, sizeof(Renna) * (i + 1));
+            if (tmp == NULL) {
+                perror("realloc");
+                free(renne);
+                exit(EXIT_FAILURE);
+            }
+            renne = tmp;
             renne[i] = r;
             i++;
         }
         if (n == -1) {
             perror("read from elf");
             exit(EXIT_FAILURE);
+        }
+        if (i <= 0) {
+            printf("Nessuna renna ricevuta.\n");
+            free(renne);
+            close(fileDescriptor[0]);
+            wait(NULL);
+            exit(EXIT_SUCCESS);
         }
         close(fileDescriptor[0]);
         wait(NULL);
