@@ -98,11 +98,9 @@ int main(void) {
             printf("Nessuna renna ricevuta.\n");
             free(reindeer);
             close(fileDescriptor[0]);
-            wait(NULL);
             exit(EXIT_SUCCESS);
         }
         close(fileDescriptor[0]);
-        wait(NULL);
         printf("Renne ricevute:\n");
         Renna bestSpeed = reindeer[0];
         for (int j = 0; j < i; j++) {
